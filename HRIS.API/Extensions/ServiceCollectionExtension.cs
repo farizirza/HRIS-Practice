@@ -29,6 +29,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPositionRepository, PositionRepository>();
         
         services.AddScoped<IEmployeeService, EfEmployeeService>();
+        
+        // Module 6: MediatR scans this assembly for handlers
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
         return services;
     }
 }

@@ -1,17 +1,19 @@
 using HRIS.API.Data.Repositories;
 using HRIS.API.Entities;
+using HRIS.API.Features.Departments.Queries.GetDepartments;
 using HRIS.API.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRIS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DepartmentsController(IUnitOfWork uow) : ControllerBase
+public class DepartmentsController(IUnitOfWork uow, ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<DepartmentResponse>>> GetAll(CancellationToken ct)
-        => Ok(await uow.Departments.GetResponsesAsync(ct));
+        => Ok(await sender.Send(new GetDepartmentsQuery(), ct));
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request, CancellationToken ct)

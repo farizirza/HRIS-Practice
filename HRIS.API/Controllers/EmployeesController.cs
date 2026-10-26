@@ -1,27 +1,24 @@
 ﻿using HRIS.API.Entities;
+using HRIS.API.Features.Employees.Queries.GetEmployeeById;
+using HRIS.API.Features.Employees.Queries.GetEmployees;
 using HRIS.API.Models;
 using HRIS.API.Services;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRIS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class EmployeesController(IEmployeeService employeeService) : ControllerBase
+public class EmployeesController(IEmployeeService employeeService, ISender sender) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EmployeeResponse>>> GetAll(
-        CancellationToken ct)
-        => Ok(await employeeService.GetAllAsync(ct));
-    
+    public async Task<ActionResult<IReadOnlyCollection<EmployeeResponse>>> GetAll(CancellationToken ct)
+        => Ok(await sender.Send(new GetEmployeesQuery(), ct));
+
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<EmployeeResponse>> GetById([FromRoute]Guid id, CancellationToken ct)
-    {
-        var employee = await employeeService.GetByIdAsync(id, ct);
-        return employee is null 
-            ? NotFound() 
-            : Ok(employee);
-    }
+    public async Task<ActionResult<EmployeeResponse>> GetById([FromRoute] Guid id, CancellationToken ct)
+        => await sender.Send(new GetEmployeeByIdQuery(id), ct) is { } employee ? Ok(employee) : NotFound();
     
     [HttpPost]
     public async Task<ActionResult<EmployeeResponse>> Create([FromBody]CreateEmployeeRequest request, CancellationToken ct)

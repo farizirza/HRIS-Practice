@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "4xGsBUtTNJQ=",
+  "dgSpecHash": "+cRG4UklANY=",
   "success": true,
   "projectFilePath": "C:\\Users\\Fariz Irza\\RiderProjects\\HRIS\\HRIS.API\\HRIS.API.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,8 @@
     "C:\\Users\\Fariz Irza\\.nuget\\packages\\entityframeworkcore.commontools\\2.0.2\\entityframeworkcore.commontools.2.0.2.nupkg.sha512",
     "C:\\Users\\Fariz Irza\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Fariz Irza\\.nuget\\packages\\jil\\2.15.4\\jil.2.15.4.nupkg.sha512",
+    "C:\\Users\\Fariz Irza\\.nuget\\packages\\mediatr\\12.5.0\\mediatr.12.5.0.nupkg.sha512",
+    "C:\\Users\\Fariz Irza\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
     "C:\\Users\\Fariz Irza\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.13\\microsoft.aspnetcore.openapi.10.0.13.nupkg.sha512",
     "C:\\Users\\Fariz Irza\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
     "C:\\Users\\Fariz Irza\\.nuget\\packages\\microsoft.build.framework\\18.0.2\\microsoft.build.framework.18.0.2.nupkg.sha512",

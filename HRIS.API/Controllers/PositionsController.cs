@@ -1,17 +1,19 @@
 using HRIS.API.Data.Repositories;
 using HRIS.API.Entities;
+using HRIS.API.Features.Positions.Queries.GetPositions;
 using HRIS.API.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRIS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PositionsController(IUnitOfWork uow) : ControllerBase
+public class PositionsController(IUnitOfWork uow, ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<PositionResponse>>> GetAll(CancellationToken ct)
-        => Ok(await uow.Positions.GetResponsesAsync(ct));
+        => Ok(await sender.Send(new GetPositionsQuery(), ct));
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePositionRequest request, CancellationToken ct)
