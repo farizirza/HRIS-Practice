@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HRIS.API.Services;
 
-public class EfEmployeeService(IUnitOfWork uow, TimeProvider timeProvider) : IEmployeeService
+public class EfEmployeeService(IUnitOfWork uow, TimeProvider timeProvider, ILogger<EfEmployeeService> logger) : IEmployeeService
 {
     public async Task<IReadOnlyCollection<EmployeeResponse>> GetAllAsync(CancellationToken ct = default)
         => await uow.Employees.GetResponsesAsync(ct);
@@ -23,6 +23,7 @@ public class EfEmployeeService(IUnitOfWork uow, TimeProvider timeProvider) : IEm
         
         await uow.Employees.AddAsync(employee, ct);
         await uow.SaveChangesAsync(ct);
+        logger.LogInformation("Employee {EmployeeId} created", employee.Id);
         return employee.Id;
     }
 
@@ -66,6 +67,8 @@ public class EfEmployeeService(IUnitOfWork uow, TimeProvider timeProvider) : IEm
         }
         
         await uow.SaveChangesAsync(ct);
+        logger.LogInformation("Employee {EmployeeId} terminated; {ReassignedCount} direct reports moved to manager {ManagerId}",
+            id, directReports.Count, employee.ManagerId);
         return TerminateResult.Terminated;
     }
 }

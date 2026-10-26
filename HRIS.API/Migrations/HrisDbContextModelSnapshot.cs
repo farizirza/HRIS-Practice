@@ -48,7 +48,7 @@ namespace HRIS.API.Migrations
 
                     b.HasIndex("ParentDepartmentId");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Employee", b =>
@@ -73,11 +73,6 @@ namespace HRIS.API.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("EmployeeStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -91,6 +86,11 @@ namespace HRIS.API.Migrations
 
                     b.Property<Guid>("PositionId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateOnly?>("TerminatedAt")
                         .HasColumnType("date");
@@ -109,7 +109,7 @@ namespace HRIS.API.Migrations
 
                     b.HasIndex("PositionId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Position", b =>
@@ -131,7 +131,7 @@ namespace HRIS.API.Migrations
                     b.HasIndex("Title")
                         .IsUnique();
 
-                    b.ToTable("Positions", (string)null);
+                    b.ToTable("Positions");
 
                     b.HasData(
                         new
