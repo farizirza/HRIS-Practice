@@ -32,3 +32,5 @@ public record EmployeeResponse(
     string? ManagerName,
     DateTimeOffset CreatedAt
 );
+
+public record AssignManagerRequest(Guid? ManagerId);   // null = no manager

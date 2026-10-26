@@ -1,16 +1,20 @@
-﻿using HRIS.API.Entities;
+﻿using HRIS.API.Features.Employees.Commands.AssignManager;
+using HRIS.API.Features.Employees.Commands.CreateEmployee;
+using HRIS.API.Features.Employees.Commands.DeleteEmployee;
+using HRIS.API.Features.Employees.Commands.TerminateEmployee;
+using HRIS.API.Features.Employees.Commands.UpdateEmployee;
 using HRIS.API.Features.Employees.Queries.GetEmployeeById;
 using HRIS.API.Features.Employees.Queries.GetEmployees;
 using HRIS.API.Models;
-using HRIS.API.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRIS.API.Controllers;
 
+/// <summary>Thin controller: translate HTTP to a command or query, send it, translate the result back to HTTP.</summary>
 [ApiController]
-[Route("api/[controller]")]
-public class EmployeesController(IEmployeeService employeeService, ISender sender) : ControllerBase
+[Route("api/[controller]")]   // EmployeesController -> /api/employees
+public class EmployeesController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeResponse>>> GetAll(CancellationToken ct)
@@ -19,34 +23,34 @@ public class EmployeesController(IEmployeeService employeeService, ISender sende
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<EmployeeResponse>> GetById([FromRoute] Guid id, CancellationToken ct)
         => await sender.Send(new GetEmployeeByIdQuery(id), ct) is { } employee ? Ok(employee) : NotFound();
-    
+
     [HttpPost]
-    public async Task<ActionResult<EmployeeResponse>> Create([FromBody]CreateEmployeeRequest request, CancellationToken ct)
+    [ProducesResponseType<EmployeeResponse>(StatusCodes.Status201Created)]
+    public async Task<ActionResult<EmployeeResponse>> Create([FromBody] CreateEmployeeRequest request, CancellationToken ct)
     {
-        var id = await employeeService.CreateAsync(request, ct);
-        var employee = await employeeService.GetByIdAsync(id, ct);
+        var id = await sender.Send(new CreateEmployeeCommand(request), ct);
+        var employee = await sender.Send(new GetEmployeeByIdQuery(id), ct);
         return CreatedAtAction(nameof(GetById), new { id }, employee);
     }
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEmployeeRequest request, CancellationToken ct)
-        => await employeeService.UpdateAsync(id, request, ct) 
-            ? NoContent() 
-            : NotFound();
+        => await sender.Send(new UpdateEmployeeCommand(id, request), ct) ? NoContent() : NotFound();
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken ct)
-        => await employeeService.DeleteAsync(id, ct)
-            ? NoContent()
-            : NotFound();
+    [HttpPut("{id:guid}/manager")]
+    public async Task<IActionResult> AssignManager([FromRoute] Guid id, [FromBody] AssignManagerRequest request, CancellationToken ct)
+        => await sender.Send(new AssignManagerCommand(id, request.ManagerId), ct) ? NoContent() : NotFound();
 
     [HttpPost("{id:guid}/terminate")]
     public async Task<IActionResult> Terminate([FromRoute] Guid id, CancellationToken ct)
-        => await employeeService.TerminateAsync(id, ct)
-            switch
-            {
-                TerminateResult.Terminated => NoContent(),
-                TerminateResult.AlreadyTerminated => Conflict(),
-                _ => NotFound()
-            };
+        => await sender.Send(new TerminateEmployeeCommand(id), ct) switch
+        {
+            TerminateResult.Terminated => NoContent(),
+            TerminateResult.AlreadyTerminated => Conflict(),
+            _ => NotFound()
+        };
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken ct)
+        => await sender.Send(new DeleteEmployeeCommand(id), ct) ? NoContent() : NotFound();
 }

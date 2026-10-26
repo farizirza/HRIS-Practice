@@ -1,12 +1,10 @@
 ﻿using HRIS.API.Entities;
-using HRIS.API.Models;
 
 namespace HRIS.API.Data.Repositories;
 
 public interface IEmployeeRepository : IRepository<Employee>
 {
-    Task<IReadOnlyCollection<EmployeeResponse>> GetResponsesAsync(CancellationToken ct = default);
-    Task<EmployeeResponse?> GetResponseAsync(Guid id, CancellationToken ct = default);
-    
+    // Domain-specific query that the generic repository cannot express by name.
+    // Reads for the API (lists, DTOs) live in query handlers since Module 6.
     Task<IReadOnlyCollection<Employee>> GetDirectReportsAsync(Guid managerId, CancellationToken ct = default);
 }

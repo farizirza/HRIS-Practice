@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HRIS.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a94fbea1c0fa21a266c634e0ac62488cc068a7a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5acd592af0316332cb3a319e34bc30481ef0e519")]
 [assembly: System.Reflection.AssemblyProductAttribute("HRIS.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HRIS.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

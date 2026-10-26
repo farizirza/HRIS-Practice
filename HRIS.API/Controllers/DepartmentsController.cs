@@ -1,5 +1,4 @@
-using HRIS.API.Data.Repositories;
-using HRIS.API.Entities;
+using HRIS.API.Features.Departments.Commands.CreateDepartment;
 using HRIS.API.Features.Departments.Queries.GetDepartments;
 using HRIS.API.Models;
 using MediatR;
@@ -9,7 +8,7 @@ namespace HRIS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DepartmentsController(IUnitOfWork uow, ISender sender) : ControllerBase
+public class DepartmentsController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<DepartmentResponse>>> GetAll(CancellationToken ct)
@@ -18,16 +17,7 @@ public class DepartmentsController(IUnitOfWork uow, ISender sender) : Controller
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request, CancellationToken ct)
     {
-        var department = new Department
-        {
-            Id = Guid.CreateVersion7(),
-            Code = request.Code.Trim().ToUpperInvariant(),
-            Name = request.Name.Trim(),
-            ParentDepartmentId = request.ParentDepartmentId
-        };
-        
-        await uow.Departments.AddAsync(department, ct);
-        await uow.SaveChangesAsync(ct);
-        return Created($"/api/departments/{department.Id}", new { id = department.Id });
+        var id = await sender.Send(new CreateDepartmentCommand(request), ct);
+        return Created($"/api/departments/{id}", new { id });
     }
 }

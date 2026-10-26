@@ -1,5 +1,4 @@
-using HRIS.API.Data.Repositories;
-using HRIS.API.Entities;
+using HRIS.API.Features.Positions.Commands.CreatePosition;
 using HRIS.API.Features.Positions.Queries.GetPositions;
 using HRIS.API.Models;
 using MediatR;
@@ -9,7 +8,7 @@ namespace HRIS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PositionsController(IUnitOfWork uow, ISender sender) : ControllerBase
+public class PositionsController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<PositionResponse>>> GetAll(CancellationToken ct)
@@ -18,10 +17,7 @@ public class PositionsController(IUnitOfWork uow, ISender sender) : ControllerBa
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePositionRequest request, CancellationToken ct)
     {
-        var position = request.ToEntity();
-        await uow.Positions.AddAsync(position, ct);
-        await uow.SaveChangesAsync(ct);
-        
-        return Created($"/api/positions/{position.Id}", new { id = position.Id });
+        var id = await sender.Send(new CreatePositionCommand(request), ct);
+        return Created($"/api/positions/{id}", new { id });
     }
 }
