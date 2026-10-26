@@ -49,6 +49,27 @@ namespace HRIS.API.Migrations
                     b.HasIndex("ParentDepartmentId");
 
                     b.ToTable("Departments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000d1"),
+                            Code = "TECH",
+                            Name = "Technology"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000d2"),
+                            Code = "TECH-BE",
+                            Name = "Backend",
+                            ParentDepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d1")
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Code = "PEOPLE",
+                            Name = "People Operations"
+                        });
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Employee", b =>
@@ -110,6 +131,179 @@ namespace HRIS.API.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000e1"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d1"),
+                            Email = "dewi@demo.hris.test",
+                            EmployeeNumber = "EMP-1001",
+                            FullName = "Dewi Lestari",
+                            HireDate = new DateOnly(2020, 1, 6),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-72cbd94cb9f2"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000e2"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d1"),
+                            Email = "budi@demo.hris.test",
+                            EmployeeNumber = "EMP-1002",
+                            FullName = "Budi Hartono",
+                            HireDate = new DateOnly(2021, 3, 1),
+                            ManagerId = new Guid("0199f200-0000-7000-8000-0000000000e1"),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-6c3b9bd9cd5c"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000e3"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d2"),
+                            Email = "siti@demo.hris.test",
+                            EmployeeNumber = "EMP-1003",
+                            FullName = "Siti Aminah",
+                            HireDate = new DateOnly(2022, 6, 15),
+                            ManagerId = new Guid("0199f200-0000-7000-8000-0000000000e2"),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-0000000000e4"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d2"),
+                            Email = "andi@demo.hris.test",
+                            EmployeeNumber = "EMP-1004",
+                            FullName = "Andi Pratama",
+                            HireDate = new DateOnly(2022, 9, 1),
+                            ManagerId = new Guid("0199f200-0000-7000-8000-0000000000e2"),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000105"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff5@demo.hris.test",
+                            EmployeeNumber = "EMP-1005",
+                            FullName = "Staff 5",
+                            HireDate = new DateOnly(2024, 1, 5),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000106"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff6@demo.hris.test",
+                            EmployeeNumber = "EMP-1006",
+                            FullName = "Staff 6",
+                            HireDate = new DateOnly(2024, 1, 6),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000107"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff7@demo.hris.test",
+                            EmployeeNumber = "EMP-1007",
+                            FullName = "Staff 7",
+                            HireDate = new DateOnly(2024, 1, 7),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000108"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff8@demo.hris.test",
+                            EmployeeNumber = "EMP-1008",
+                            FullName = "Staff 8",
+                            HireDate = new DateOnly(2024, 1, 8),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000109"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff9@demo.hris.test",
+                            EmployeeNumber = "EMP-1009",
+                            FullName = "Staff 9",
+                            HireDate = new DateOnly(2024, 1, 9),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000110"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff10@demo.hris.test",
+                            EmployeeNumber = "EMP-1010",
+                            FullName = "Staff 10",
+                            HireDate = new DateOnly(2024, 1, 10),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000111"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff11@demo.hris.test",
+                            EmployeeNumber = "EMP-1011",
+                            FullName = "Staff 11",
+                            HireDate = new DateOnly(2024, 1, 11),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000112"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff12@demo.hris.test",
+                            EmployeeNumber = "EMP-1012",
+                            FullName = "Staff 12",
+                            HireDate = new DateOnly(2024, 1, 12),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000113"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff13@demo.hris.test",
+                            EmployeeNumber = "EMP-1013",
+                            FullName = "Staff 13",
+                            HireDate = new DateOnly(2024, 1, 13),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f200-0000-7000-8000-000000000114"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DepartmentId = new Guid("0199f200-0000-7000-8000-0000000000d3"),
+                            Email = "staff14@demo.hris.test",
+                            EmployeeNumber = "EMP-1014",
+                            FullName = "Staff 14",
+                            HireDate = new DateOnly(2024, 1, 14),
+                            PositionId = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
+                            Status = "Active"
+                        });
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Position", b =>
@@ -136,19 +330,19 @@ namespace HRIS.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("01a166bf-2518-743a-bc79-972df6de3ecc"),
+                            Id = new Guid("01a166be-ee55-747c-b090-69f7572f26e8"),
                             Level = 2,
                             Title = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("01a166bf-2518-743a-bc79-98d145939083"),
+                            Id = new Guid("01a166be-ee55-747c-b090-6c3b9bd9cd5c"),
                             Level = 5,
                             Title = "Supervisor"
                         },
                         new
                         {
-                            Id = new Guid("01a166bf-2518-743a-bc79-9e1819223d9f"),
+                            Id = new Guid("01a166be-ee55-747c-b090-72cbd94cb9f2"),
                             Level = 8,
                             Title = "Department Head"
                         });

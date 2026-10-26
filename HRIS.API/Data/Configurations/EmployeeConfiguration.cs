@@ -1,4 +1,4 @@
-﻿using HRIS.API.Entities;
+using HRIS.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,5 +41,33 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .WithMany(m => m.DirectReports)
             .HasForeignKey(e => e.ManagerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasData(SeedEmployees());
+    }
+
+    private static readonly DateTimeOffset SeededAt = new(2026, 1, 5, 0, 0, 0, TimeSpan.Zero);
+
+    private static Employee Seed(Guid id, string number, string fullName, string email, DateOnly hireDate,
+        Guid departmentId, Guid positionId, Guid? managerId) =>
+        new(id, number, fullName, email, hireDate, SeededAt, EmployeeStatus.Active, null,
+            departmentId, positionId, managerId);
+
+    private static IEnumerable<Employee> SeedEmployees()
+    {
+        // A manager comes before the people who report to him
+        yield return Seed(DemoSeedIds.Dewi, "EMP-1001", "Dewi Lestari", "dewi@demo.hris.test",
+            new DateOnly(2020, 1, 6), DemoSeedIds.Tech, DemoSeedIds.DepartmentHead, null);
+        yield return Seed(DemoSeedIds.Budi, "EMP-1002", "Budi Hartono", "budi@demo.hris.test",
+            new DateOnly(2021, 3, 1), DemoSeedIds.Tech, DemoSeedIds.Supervisor, DemoSeedIds.Dewi);
+        yield return Seed(DemoSeedIds.Siti, "EMP-1003", "Siti Aminah", "siti@demo.hris.test",
+            new DateOnly(2022, 6, 15), DemoSeedIds.TechBackend, DemoSeedIds.Staff, DemoSeedIds.Budi);
+        yield return Seed(DemoSeedIds.Andi, "EMP-1004", "Andi Pratama", "andi@demo.hris.test",
+            new DateOnly(2022, 9, 1), DemoSeedIds.TechBackend, DemoSeedIds.Staff, DemoSeedIds.Budi);
+
+        for (var n = 5; n <= 14; n++)
+        {
+            yield return Seed(DemoSeedIds.StaffMember(n), $"EMP-10{n:D2}", $"Staff {n}", $"staff{n}@demo.hris.test",
+                new DateOnly(2024, 1, n), DemoSeedIds.People, DemoSeedIds.Staff, null);
+        }
     }
 }

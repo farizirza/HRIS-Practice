@@ -1,4 +1,4 @@
-﻿using HRIS.API.Entities;
+using HRIS.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,5 +24,10 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .WithMany(d => d.SubDepartments)
             .HasForeignKey(d => d.ParentDepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasData(
+            new Department(DemoSeedIds.Tech, "TECH", "Technology", null),
+            new Department(DemoSeedIds.TechBackend, "TECH-BE", "Backend", DemoSeedIds.Tech),
+            new Department(DemoSeedIds.People, "PEOPLE", "People Operations", null));
     }
 }

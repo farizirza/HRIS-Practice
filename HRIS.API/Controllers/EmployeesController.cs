@@ -1,4 +1,6 @@
-﻿using HRIS.API.Features.Employees.Commands.AssignManager;
+﻿using HRIS.API.Common.Paging;
+using HRIS.API.Entities;
+using HRIS.API.Features.Employees.Commands.AssignManager;
 using HRIS.API.Features.Employees.Commands.CreateEmployee;
 using HRIS.API.Features.Employees.Commands.DeleteEmployee;
 using HRIS.API.Features.Employees.Commands.TerminateEmployee;
@@ -17,8 +19,12 @@ namespace HRIS.API.Controllers;
 public class EmployeesController(ISender sender) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyCollection<EmployeeResponse>>> GetAll(CancellationToken ct)
-        => Ok(await sender.Send(new GetEmployeesQuery(), ct));
+    public async Task<ActionResult<PagedResult<EmployeeListDto>>> GetAll(
+        [FromQuery] string? search, [FromQuery] Guid? departmentId, [FromQuery] EmployeeStatus? status,
+        [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
+        CancellationToken ct = default)
+        => Ok(await sender.Send(new GetEmployeesQuery(search, departmentId, status, sortBy, desc, page, pageSize), ct));
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<EmployeeResponse>> GetById([FromRoute] Guid id, CancellationToken ct)

@@ -1,5 +1,6 @@
 using HRIS.API.Features.Departments.Commands.CreateDepartment;
 using HRIS.API.Features.Departments.Queries.GetDepartments;
+using HRIS.API.Features.Departments.Queries.GetDepartmentTree;
 using HRIS.API.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,4 +21,8 @@ public class DepartmentsController(ISender sender) : ControllerBase
         var id = await sender.Send(new CreateDepartmentCommand(request), ct);
         return Created($"/api/departments/{id}", new { id });
     }
+    
+    [HttpGet("tree")]
+    public async Task<ActionResult<IReadOnlyCollection<DepartmentTreeDto>>> GetTree(CancellationToken ct)
+        => Ok(await sender.Send(new GetDepartmentTreeQuery(), ct));
 }
