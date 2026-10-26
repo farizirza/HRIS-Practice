@@ -33,9 +33,10 @@ try
     builder.Services.AddOpenApi();                    // built-in OpenAPI document, from Module 1
 
     var app = builder.Build();
-
+    
     app.UseRequestTiming();
-    app.UseHrisRequestLogging();                      // one structured line per request
+    app.UseHrisRequestLogging();     // one structured line per request, OUTSIDE the exception handler: it sees the final status
+    app.UseExceptionHandler();       // turns every exception below it into a ProblemDetails response
     app.UseMaintenanceMode();
 
     if (app.Environment.IsDevelopment())

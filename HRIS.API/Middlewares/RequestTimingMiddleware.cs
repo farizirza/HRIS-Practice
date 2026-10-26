@@ -4,20 +4,29 @@ namespace HRIS.API.Middlewares;
 
 public class RequestTimingMiddleware(ILogger<RequestTimingMiddleware> logger) : IMiddleware
 {
-    private readonly string _correlationHeader = "X-Correlation-Id";
+    private const string CorrelationHeader = "X-Correlation-Id";
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         
-        var correlationId = context.Request.Headers[_correlationHeader].FirstOrDefault();
+        var correlationId = context.Request.Headers[CorrelationHeader].FirstOrDefault();
         if (string.IsNullOrWhiteSpace(correlationId))
         {
             correlationId = Guid.NewGuid().ToString();
         }
         
-        context.Response.Headers["X-Correlation-Id"] = correlationId;
+        context.Response.Headers[CorrelationHeader] = correlationId;
+
+        // Module 7: UseExceptionHandler clears the response headers before it writes an error response.
+        // Keep the id in Items and put the header back right before the response starts.
+        context.Items[CorrelationHeader] = correlationId;
+        context.Response.OnStarting(() =>
+        {
+            context.Response.Headers[CorrelationHeader] = correlationId;
+            return Task.CompletedTask;
+        });
 
         using (logger.BeginScope("CorrelationId: {CorrelationId}", correlationId))
         {

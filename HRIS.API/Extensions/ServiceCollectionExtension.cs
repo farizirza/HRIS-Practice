@@ -1,4 +1,5 @@
 using HRIS.API.Common.Behaviors;
+using HRIS.API.Common.ExceptionHandlers;
 using HRIS.API.Data;
 using HRIS.API.Data.Repositories;
 using HRIS.API.Services;
@@ -35,6 +36,19 @@ public static class ServiceCollectionExtensions
             cfg.RegisterServicesFromAssemblyContaining<Program>();
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
         });
+        
+        services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
+        {
+            var problem = context.ProblemDetails;
+            problem.Instance ??= context.HttpContext.Request.Path.Value;
+
+            // The exception handler has already cleared the response headers, so read the id from Items (Step 5).
+            if (context.HttpContext.Items.TryGetValue("X-Correlation-Id", out var correlationId))
+            {
+                problem.Extensions["correlationId"] = correlationId?.ToString();
+            }
+        });
+        services.AddExceptionHandler<GlobalExceptionHandler>();   // Lesson 3 adds two more BEFORE this line
         return services;
     }
 }
