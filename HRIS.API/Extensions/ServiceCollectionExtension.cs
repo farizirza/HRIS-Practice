@@ -1,8 +1,10 @@
+using FluentValidation;
 using HRIS.API.Common.Behaviors;
 using HRIS.API.Common.ExceptionHandlers;
 using HRIS.API.Data;
 using HRIS.API.Data.Repositories;
 using HRIS.API.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRIS.API.Extensions;
@@ -47,8 +49,16 @@ public static class ServiceCollectionExtensions
             {
                 problem.Extensions["correlationId"] = correlationId?.ToString();
             }
+            // inside CustomizeProblemDetails, after the correlationId block
+            // A 400 that MVC wrote itself (broken JSON, "abc" for a Guid) is not a FluentValidation failure.
+            if (problem is ValidationProblemDetails && !problem.Extensions.ContainsKey(ProblemDetailsWriter.ErrorCodeKey))
+            {
+                problem.Extensions[ProblemDetailsWriter.ErrorCodeKey] = "MALFORMED_REQUEST";
+            }
         });
         services.AddExceptionHandler<GlobalExceptionHandler>();   // Lesson 3 adds two more BEFORE this line
+        
+        services.AddValidatorsFromAssembly(typeof(Program).Assembly);   // every AbstractValidator<T> in this project becomes IValidator<T>
         return services;
     }
 }
