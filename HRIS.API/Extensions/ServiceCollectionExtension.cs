@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
         {
             cfg.RegisterServicesFromAssemblyContaining<Program>();
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         
         services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
@@ -56,7 +57,9 @@ public static class ServiceCollectionExtensions
                 problem.Extensions[ProblemDetailsWriter.ErrorCodeKey] = "MALFORMED_REQUEST";
             }
         });
-        services.AddExceptionHandler<GlobalExceptionHandler>();   // Lesson 3 adds two more BEFORE this line
+        services.AddExceptionHandler<ValidationExceptionHandler>();
+        services.AddExceptionHandler<DomainExceptionHandler>();
+        services.AddExceptionHandler<GlobalExceptionHandler>();   // fallback, always last
         
         services.AddValidatorsFromAssembly(typeof(Program).Assembly);   // every AbstractValidator<T> in this project becomes IValidator<T>
         return services;
