@@ -1,22 +1,34 @@
-﻿namespace HRIS.API.Models;
+﻿using HRIS.API.Entities;
+
+namespace HRIS.API.Models;
 
 public record CreateEmployeeRequest(
     string EmployeeNumber, 
     string FullName, 
     string Email,
-    DateOnly HireDate);
+    DateOnly HireDate,
+    Guid DepartmentId,
+    Guid PositionId,
+    Guid? ManagerId);
 
 public record UpdateEmployeeRequest(
     string EmployeeNumber,
     string FullName,
     string Email,
-    DateOnly HireDate
-);
+    DateOnly HireDate,
+    Guid DepartmentId,
+    Guid PositionId,
+    Guid? ManagerId);
 
 public record EmployeeResponse(
-    Guid EmployeeId,
+    Guid Id,
+    string EmployeeNumber,
     string FullName,
     string Email,
     DateOnly HireDate,
+    EmployeeStatus Status, 
+    string DepartmentName,
+    string PositionTitle,
+    string? ManagerName,
     DateTimeOffset CreatedAt
 );

@@ -1,4 +1,5 @@
-﻿using HRIS.API.Data;
+using HRIS.API.Data;
+using HRIS.API.Data.Repositories;
 using HRIS.API.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,6 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<HrisDbContext>(options => 
             options.UseSqlServer(connectionString));
         
-        services.AddSingleton<IEmployeeService, InMemoryEmployeeService>();
         services.AddSingleton(TimeProvider.System);
         
         services.AddTransient<ITransientOperation, Operation>();   // a new instance for every injection
@@ -22,6 +22,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISingletonOperation, Operation>();   // one instance for the application
         services.AddScoped<OperationReport>();                     // helper 
         
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // IRepository<Employee>.. IRepository<Position>..
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IPositionRepository, PositionRepository>();
+        
+        services.AddScoped<IEmployeeService, EfEmployeeService>();
         return services;
     }
 }

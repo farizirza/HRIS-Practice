@@ -48,7 +48,7 @@ namespace HRIS.API.Migrations
 
                     b.HasIndex("ParentDepartmentId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Employee", b =>
@@ -109,7 +109,7 @@ namespace HRIS.API.Migrations
 
                     b.HasIndex("PositionId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Position", b =>
@@ -131,7 +131,27 @@ namespace HRIS.API.Migrations
                     b.HasIndex("Title")
                         .IsUnique();
 
-                    b.ToTable("Positions");
+                    b.ToTable("Positions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("01a166bf-2518-743a-bc79-972df6de3ecc"),
+                            Level = 2,
+                            Title = "Staff"
+                        },
+                        new
+                        {
+                            Id = new Guid("01a166bf-2518-743a-bc79-98d145939083"),
+                            Level = 5,
+                            Title = "Supervisor"
+                        },
+                        new
+                        {
+                            Id = new Guid("01a166bf-2518-743a-bc79-9e1819223d9f"),
+                            Level = 8,
+                            Title = "Department Head"
+                        });
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Department", b =>
