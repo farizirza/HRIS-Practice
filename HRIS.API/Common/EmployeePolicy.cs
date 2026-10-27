@@ -9,4 +9,12 @@ public class EmployeePolicy(TimeProvider timeProvider)
     
     public bool IsOnProbation(DateOnly hireDate) 
         => Today < hireDate.AddMonths(ProbationMonths);
+    
+    public int GetTenureMonths(DateOnly hireDate)
+    {
+        if (Today < hireDate) return 0;
+        var months = (Today.Year - hireDate.Year) * 12 + Today.Month - hireDate.Month;
+        if (Today.Day < hireDate.Day) months--;
+        return Math.Max(0, months);
+    }
 }
