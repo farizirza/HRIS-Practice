@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -18,9 +18,9 @@ namespace HRIS.API.Migrations
                 columns: new[] { "Id", "Level", "Title" },
                 values: new object[,]
                 {
-                    { new Guid("01a166bf-2518-743a-bc79-972df6de3ecc"), 2, "Staff" },
-                    { new Guid("01a166bf-2518-743a-bc79-98d145939083"), 5, "Supervisor" },
-                    { new Guid("01a166bf-2518-743a-bc79-9e1819223d9f"), 8, "Department Head" }
+                    { new Guid("01a166be-ee55-747c-b090-69f7572f26e8"), 2, "Staff" },
+                    { new Guid("01a166be-ee55-747c-b090-6c3b9bd9cd5c"), 5, "Supervisor" },
+                    { new Guid("01a166be-ee55-747c-b090-72cbd94cb9f2"), 8, "Department Head" }
                 });
         }
 
@@ -30,17 +30,17 @@ namespace HRIS.API.Migrations
             migrationBuilder.DeleteData(
                 table: "Positions",
                 keyColumn: "Id",
-                keyValue: new Guid("01a166bf-2518-743a-bc79-972df6de3ecc"));
+                keyValue: new Guid("01a166be-ee55-747c-b090-69f7572f26e8"));
 
             migrationBuilder.DeleteData(
                 table: "Positions",
                 keyColumn: "Id",
-                keyValue: new Guid("01a166bf-2518-743a-bc79-98d145939083"));
+                keyValue: new Guid("01a166be-ee55-747c-b090-6c3b9bd9cd5c"));
 
             migrationBuilder.DeleteData(
                 table: "Positions",
                 keyColumn: "Id",
-                keyValue: new Guid("01a166bf-2518-743a-bc79-9e1819223d9f"));
+                keyValue: new Guid("01a166be-ee55-747c-b090-72cbd94cb9f2"));
         }
     }
 }

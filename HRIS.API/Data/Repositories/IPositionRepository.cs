@@ -3,4 +3,7 @@ using HRIS.API.Models;
 
 namespace HRIS.API.Data.Repositories;
 
-public interface IPositionRepository : IRepository<Position>;
+public interface IPositionRepository : IRepository<Position>
+{
+    Task<bool> TitleExistsAsync(string title, CancellationToken ct = default);
+}

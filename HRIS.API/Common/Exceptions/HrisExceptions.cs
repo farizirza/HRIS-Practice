@@ -1,4 +1,4 @@
-﻿namespace HRIS.API.Common.Exceptions;
+namespace HRIS.API.Common.Exceptions;
 
 // One exception hierarchy for the whole course (Module 7).
 // Derive from Exception through HrisException, not from ApplicationException.
@@ -111,6 +111,15 @@ public class DuplicateDepartmentException : ConflictException
     public DuplicateDepartmentException(string message, Exception innerException) : base(message, innerException) { }
 
     public override string ErrorCode => "DEPARTMENT_DUPLICATE";
+}
+
+/// <summary>409: a position with this title already exists.</summary>
+public class DuplicatePositionException : ConflictException
+{
+    public DuplicatePositionException(string message) : base(message) { }
+    public DuplicatePositionException(string message, Exception innerException) : base(message, innerException) { }
+
+    public override string ErrorCode => "POSITION_DUPLICATE";
 }
 
 /// <summary>409: the employee was terminated before.</summary>

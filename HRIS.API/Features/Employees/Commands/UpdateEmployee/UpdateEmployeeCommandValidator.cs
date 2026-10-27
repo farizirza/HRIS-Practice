@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using HRIS.API.Data;
 using HRIS.API.Features.Employees.Commands.CreateEmployee;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,11 @@ public class UpdateEmployeeCommandValidator : AbstractValidator<UpdateEmployeeCo
             .NotEmpty()
             .Matches(@"^EMP-\d{4}$").WithMessage("Employee number must look like EMP-0001.");
 
-        RuleFor(x => x.Request.FullName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Request.FullName)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .MinimumLength(2).WithMessage("Full name must have at least 2 characters.")
+            .MaximumLength(100);
 
         RuleFor(x => x.Request.Email).NotEmpty().EmailAddress().MaximumLength(256);
 
