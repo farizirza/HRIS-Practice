@@ -41,6 +41,11 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .WithMany(m => m.DirectReports)
             .HasForeignKey(e => e.ManagerId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(e => e.User)
+            .WithOne()
+            .HasForeignKey<Employee>(e => e.UserId)
+            .OnDelete(DeleteBehavior.Restrict);   // EF adds a filtered unique index on UserId (IS NOT NULL)
 
         builder.HasData(SeedEmployees());
     }

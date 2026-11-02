@@ -23,6 +23,7 @@ try
         })
         .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
     builder.Services.AddHrisServices(builder.Configuration);
+    builder.Services.AddHrisSecurity();   // Module 10, after AddHrisServices
     builder.Services.AddMiddleware();
 
     builder.Services.AddCors(options =>
@@ -41,29 +42,27 @@ try
     
     app.UseRequestTiming();
     app.UseHrisRequestLogging();     // one structured line per request, OUTSIDE the exception handler: it sees the final status
-    app.UseExceptionHandler();       // turns every exception below it into a ProblemDetails response
     app.UseMaintenanceMode();
+    app.UseExceptionHandler();       // turns every exception below it into a ProblemDetails response
+    
+    app.UseHttpsRedirection();
+    app.UseCors();                        // Module 3, stays before authentication
+    app.UseAuthentication();              // BEFORE UseAuthorization
+    app.Use(async (context, next) =>
+    {
+        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+        using (Serilog.Context.LogContext.PushProperty("UserId", userId))
+            await next(context);
+    });
+    app.UseAuthorization();
+    app.MapControllers();
 
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();                             // /openapi/v1.json
         app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "HRIS API"));
+        await app.SeedBootstrapAdminAsync();   // Module 10: admin@hris.local (update the database first)
     }
-
-    app.UseHttpsRedirection();
-    app.UseCors();
-
-    app.Use(async (context, next) =>                  // every log line written while this request runs carries a UserId
-    {
-        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
-        using (Serilog.Context.LogContext.PushProperty("UserId", userId))
-        {
-            await next(context);
-        }
-    });
-
-    app.UseAuthorization();
-    app.MapControllers();
 
     await app.RunAsync();
 }

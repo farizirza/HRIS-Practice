@@ -37,6 +37,8 @@ public class Employee
     public Guid DepartmentId { get; set; } 
     public Guid PositionId { get; set; }
     public Guid? ManagerId { get; set; }
+    public Guid? UserId { get; set; }   // set when the employee activates a login account (Module 10)
+    public User? User { get; set; }
     
     // Relationships
     public Department Department { get; set; } = null!;

@@ -116,6 +116,9 @@ namespace HRIS.API.Migrations
                     b.Property<DateOnly?>("TerminatedAt")
                         .HasColumnType("date");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
@@ -129,6 +132,10 @@ namespace HRIS.API.Migrations
                     b.HasIndex("ManagerId");
 
                     b.HasIndex("PositionId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Employees");
 
@@ -348,6 +355,91 @@ namespace HRIS.API.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HRIS.API.Entities.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0199f000-0000-7000-8000-0000000000a1"),
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f000-0000-7000-8000-0000000000a2"),
+                            Name = "HR"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f000-0000-7000-8000-0000000000a3"),
+                            Name = "Manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199f000-0000-7000-8000-0000000000a4"),
+                            Name = "Employee"
+                        });
+                });
+
+            modelBuilder.Entity("HRIS.API.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("HRIS.API.Entities.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles");
+                });
+
             modelBuilder.Entity("HRIS.API.Entities.Department", b =>
                 {
                     b.HasOne("HRIS.API.Entities.Department", "ParentDepartment")
@@ -377,11 +469,37 @@ namespace HRIS.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HRIS.API.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("HRIS.API.Entities.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Department");
 
                     b.Navigation("Manager");
 
                     b.Navigation("Position");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HRIS.API.Entities.UserRole", b =>
+                {
+                    b.HasOne("HRIS.API.Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRIS.API.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HRIS.API.Entities.Department", b =>
@@ -399,6 +517,16 @@ namespace HRIS.API.Migrations
             modelBuilder.Entity("HRIS.API.Entities.Position", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("HRIS.API.Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("HRIS.API.Entities.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
