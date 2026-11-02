@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using HRIS.API.Common.Security;
 using HRIS.API.Services.Email;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRIS.API.Controllers;
 
 [ApiController]
 [Route("api/dev")]
+[Authorize(Roles = Roles.Admin)]
 public class DevController(IEmailService emailService, IEmailTemplateRenderer renderer, IWebHostEnvironment env) : ControllerBase
 {
     public record TestEmailRequest([Required, EmailAddress] string To, [Required] string FullName);

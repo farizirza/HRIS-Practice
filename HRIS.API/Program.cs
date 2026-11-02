@@ -59,7 +59,7 @@ try
 
     if (app.Environment.IsDevelopment())
     {
-        app.MapOpenApi();                             // /openapi/v1.json
+        app.MapOpenApi().AllowAnonymous();   // the OpenAPI document is an endpoint: the fallback policy would answer 401
         app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "HRIS API"));
         await app.SeedBootstrapAdminAsync();   // Module 10: admin@hris.local (update the database first)
     }
