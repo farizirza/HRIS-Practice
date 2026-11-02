@@ -21,6 +21,7 @@
         </PackageReference>
         <PackageReference Include="Serilog.AspNetCore" Version="10.*" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.3.1" />
+        <None Update="Templates\**\*.html" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>

@@ -3,6 +3,8 @@ using HRIS.API.Data.Repositories;
 using HRIS.API.Entities;
 using HRIS.API.Features.Employees.Commands.CreateEmployee;
 using HRIS.API.Models;
+using HRIS.API.Services.Email;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
@@ -15,6 +17,8 @@ public class CreateEmployeeCommandHandlerTests
     private readonly Mock<IEmployeeRepository> _employees = new();
     private readonly Mock<IUnitOfWork> _uow = new();
     private readonly CreateEmployeeCommandHandler _sut;
+    private readonly Mock<IEmailService> _email = new();
+    private readonly Mock<IEmailTemplateRenderer> _renderer = new();
 
     private static readonly CreateEmployeeCommand Command = new(new CreateEmployeeRequest(
         "EMP-0100", "Siti Aminah", " Siti.Aminah@Company.ID ", new DateOnly(2026, 11, 2),
@@ -23,7 +27,13 @@ public class CreateEmployeeCommandHandlerTests
     public CreateEmployeeCommandHandlerTests()
     {
         _uow.Setup(u => u.Employees).Returns(_employees.Object);
-        _sut = new CreateEmployeeCommandHandler(_uow.Object, _time, NullLogger<CreateEmployeeCommandHandler>.Instance);
+        _renderer.Setup(r => r.RenderAsync("WelcomeEmployee", It.IsAny<IReadOnlyDictionary<string, string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("<html>welcome</html>");
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["App:FrontendUrl"] = "https://hris.test" })
+            .Build();
+        _sut = new CreateEmployeeCommandHandler(_uow.Object, _time, _email.Object, _renderer.Object, configuration,
+            NullLogger<CreateEmployeeCommandHandler>.Instance);
     }
 
     [Fact]
@@ -49,5 +59,32 @@ public class CreateEmployeeCommandHandlerTests
         Assert.Contains("EMP-0100", ex.Message);
         _employees.Verify(r => r.AddAsync(It.IsAny<Employee>(), It.IsAny<CancellationToken>()), Times.Never);
         _uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+    [Fact]
+    public async Task Handle_NewEmployee_SendsWelcomeEmailAfterTheSave()
+    {
+        var calls = new List<string>();
+        _uow.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).Returns(() => { calls.Add("save"); return Task.FromResult(1); });
+        _email.Setup(e => e.SendEmailAsync(It.IsAny<MailRequest>(), It.IsAny<CancellationToken>()))
+            .Returns(() => { calls.Add("email"); return Task.CompletedTask; });
+
+        await _sut.Handle(Command, CancellationToken.None);
+
+        Assert.Equal("save,email", string.Join(",", calls));   // never an email for a record that failed to save
+        _email.Verify(e => e.SendEmailAsync(
+            It.Is<MailRequest>(m => m.ToEmail == "siti.aminah@company.id" && m.TextBody!.Contains("https://hris.test/activate")),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_EmailDeliveryFails_StillReturnsTheEmployeeId()
+    {
+        _email.Setup(e => e.SendEmailAsync(It.IsAny<MailRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new EmailDeliveryException("SMTP down", new IOException()));
+
+        var id = await _sut.Handle(Command, CancellationToken.None);
+
+        Assert.NotEqual(Guid.Empty, id);   // onboarding succeeded; HR can resend the email later
+        _uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }
