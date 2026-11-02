@@ -70,6 +70,7 @@ public static class ServiceCollectionExtensions
         services.Configure<MailSettings>(configuration.GetSection(MailSettings.SectionName));
         services.AddTransient<IEmailService, MailKitEmailService>();
         services.AddSingleton<IEmailTemplateRenderer, FileEmailTemplateRenderer>();
+
         return services;
     }
 }
