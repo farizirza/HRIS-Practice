@@ -1,14 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+      <UserSecretsId>5d350293-35ce-4ba8-b9b7-8e88597df716</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="EntityFrameworkCore.CommonTools" Version="2.0.2" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.*" />
+        <PackageReference Include="MailKit" Version="4.*" />
         <PackageReference Include="MediatR" Version="12.*" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />

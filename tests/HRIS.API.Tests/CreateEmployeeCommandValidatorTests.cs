@@ -5,6 +5,7 @@ using HRIS.API.Features.Employees.Commands.CreateEmployee;
 using HRIS.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Time.Testing;
+using Xunit;
 
 namespace HRIS.API.Tests;
 
@@ -22,7 +23,7 @@ public class CreateEmployeeCommandValidatorTests : IAsyncLifetime
             .UseInMemoryDatabase($"validator-{Guid.NewGuid()}")
             .Options;
         _db = new HrisDbContext(options);
-        _sut = new CreateEmployeeCommandValidator(_db, _time);
+        _sut = new CreateEmployeeCommandValidator(_db, new EmployeePolicy(_time));
     }
 
     public async Task InitializeAsync()

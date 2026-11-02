@@ -1,13 +1,13 @@
 using FluentValidation;
+using HRIS.API.Common;
 using HRIS.API.Data;
-using HRIS.API.Features.Employees.Commands.CreateEmployee;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRIS.API.Features.Employees.Commands.UpdateEmployee;
 
 public class UpdateEmployeeCommandValidator : AbstractValidator<UpdateEmployeeCommand>
 {
-    public UpdateEmployeeCommandValidator(HrisDbContext db, TimeProvider timeProvider)
+    public UpdateEmployeeCommandValidator(HrisDbContext db, EmployeePolicy policy)
     {
         RuleFor(x => x.Request.EmployeeNumber)
             .NotEmpty()
@@ -23,9 +23,8 @@ public class UpdateEmployeeCommandValidator : AbstractValidator<UpdateEmployeeCo
 
         RuleFor(x => x.Request.HireDate)
             .NotEmpty()
-            .Must(date => date <= DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime)
-                .AddDays(CreateEmployeeCommandValidator.MaxFutureHireDays))
-            .WithMessage($"Hire date cannot be more than {CreateEmployeeCommandValidator.MaxFutureHireDays} days in the future.");
+            .Must(policy.IsValidHireDate)
+            .WithMessage($"Hire date cannot be more than {EmployeePolicy.MaxFutureHireDays} days in the future.");
 
         RuleFor(x => x.Request.DepartmentId)
             .MustAsync(async (id, ct) => await db.Departments.AnyAsync(d => d.Id == id, ct))
