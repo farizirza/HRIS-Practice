@@ -1,4 +1,5 @@
-﻿using HRIS.API.Common.Security;
+﻿using System.Text;
+using HRIS.API.Common.Security;
 using HRIS.API.Entities;
 using HRIS.API.Features.Auth;
 using Microsoft.AspNetCore.Authentication;
@@ -10,7 +11,8 @@ namespace HRIS.API.Extensions;
 public static class SecurityExtensions
 {
     /// <summary>Module 10: password hashing, Basic authentication, roles, policies, fallback policy, current user.</summary>
-    public static IServiceCollection AddHrisSecurity(this IServiceCollection services)
+    public static IServiceCollection AddHrisSecurity(this IServiceCollection services,
+        IConfiguration configuration)
     {
         // Password hashing (PBKDF2 + random salt) and the reusable credential check
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -30,6 +32,14 @@ public static class SecurityExtensions
         // The current user, available to handlers without touching HttpContext
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
+        
+        // JWT options: bound from the "Jwt" section and checked once at startup
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .Validate(o => Encoding.UTF8.GetByteCount(o.Key) >= 32,
+                "Jwt:Key must be at least 32 bytes (HS256). Set it with User Secrets.")
+            .ValidateOnStart();
+        services.AddSingleton<ITokenService, JwtTokenService>();
         return services;
     }
 }

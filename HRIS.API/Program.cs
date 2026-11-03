@@ -23,7 +23,7 @@ try
         })
         .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
     builder.Services.AddHrisServices(builder.Configuration);
-    builder.Services.AddHrisSecurity();   // Module 10, after AddHrisServices
+    builder.Services.AddHrisSecurity(builder.Configuration);   // Module 10, after AddHrisServices
     builder.Services.AddMiddleware();
 
     builder.Services.AddCors(options =>

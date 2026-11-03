@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace HRIS.API.Controllers;
 
 public record LoginRequest(string Email, string Password);
-public record LoginResult(Guid UserId, Guid? EmployeeId, string Email, IReadOnlyCollection<string> Roles);
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(ISender sender, IUserCredentialService credentialService) : ControllerBase
+public class AuthController(ISender sender, IUserCredentialService credentialService, ITokenService tokenService) : ControllerBase
 {
     /// <summary>Activate an account for an existing employee.</summary>
     [AllowAnonymous]
@@ -24,25 +23,28 @@ public class AuthController(ISender sender, IUserCredentialService credentialSer
     public async Task<IActionResult> Register(RegisterCommand command, CancellationToken ct)
         => StatusCode(StatusCodes.Status201Created, await sender.Send(command, ct));
 
-    /// <summary>Check an email and password once. Module 11 turns this into "issue a token".</summary>
+    /// <summary>Check an email and password and issue a JWT access token.</summary>
     [AllowAnonymous]
     [HttpPost("login")]
-    [ProducesResponseType<LoginResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(LoginRequest request, CancellationToken ct)
     {
+        // 1. Validate the credentials (hash check, active account) with the Module 10 service
         var user = await credentialService.ValidateAsync(request.Email, request.Password, ct);
         if (user is null)   // the same answer for "unknown email" and "wrong password": do not reveal which emails exist
             return Problem(statusCode: StatusCodes.Status401Unauthorized, title: "Invalid email or password.");
 
-        return Ok(new LoginResult(user.Id, user.EmployeeId, user.Email, user.Roles));
+        // 2. Create the JWT and 3. return it
+        var (token, expiresAt) = tokenService.CreateToken(user);
+        return Ok(new LoginResponse(token, expiresAt));
     }
 }
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]   // every action needs an authenticated user
-public class ProfileController : ControllerBase
+public class ProfileController(ICurrentUser currentUser) : ControllerBase
 {
     [HttpGet("me")]
     public IActionResult Me() => Ok(new
@@ -50,6 +52,6 @@ public class ProfileController : ControllerBase
         UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
         Email = User.FindFirst(ClaimTypes.Email)?.Value,
         Roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value),
-        EmployeeId = User.FindFirst(HrisClaimTypes.EmployeeId)?.Value   // null for accounts without an employee record
+        EmployeeId = currentUser.EmployeeId
     });
 }

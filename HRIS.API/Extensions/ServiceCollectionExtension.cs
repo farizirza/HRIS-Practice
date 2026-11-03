@@ -1,9 +1,11 @@
+using System.Text;
 using FluentValidation;
 using HRIS.API.Common;
 using HRIS.API.Common.Behaviors;
 using HRIS.API.Common.ExceptionHandlers;
 using HRIS.API.Data;
 using HRIS.API.Data.Repositories;
+using HRIS.API.Features.Auth;
 using HRIS.API.Services;
 using HRIS.API.Services.Email;
 using Microsoft.AspNetCore.Mvc;
@@ -70,6 +72,14 @@ public static class ServiceCollectionExtensions
         services.Configure<MailSettings>(configuration.GetSection(MailSettings.SectionName));
         services.AddTransient<IEmailService, MailKitEmailService>();
         services.AddSingleton<IEmailTemplateRenderer, FileEmailTemplateRenderer>();
+        
+        // Module 11 : JWT options: bound from the "Jwt" section and checked once at startup
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .Validate(o => Encoding.UTF8.GetByteCount(o.Key) >= 32,
+                "Jwt:Key must be at least 32 bytes (HS256). Set it with User Secrets.")
+            .ValidateOnStart();
+        services.AddSingleton<ITokenService, JwtTokenService>();
 
         return services;
     }
