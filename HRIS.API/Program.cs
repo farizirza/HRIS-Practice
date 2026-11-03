@@ -40,21 +40,23 @@ try
 
     var app = builder.Build();
     
-    app.UseRequestTiming();
-    app.UseHrisRequestLogging();     // one structured line per request, OUTSIDE the exception handler: it sees the final status
-    app.UseMaintenanceMode();
-    app.UseExceptionHandler();       // turns every exception below it into a ProblemDetails response
-    
+    app.UseRequestTiming();                                     // Module 3
+    app.UseHrisRequestLogging();                                // Module 5
+    app.UseExceptionHandler();                                  // Module 7
+    app.UseMaintenanceMode();                                   // Module 3
+
+    // ... the Development block with MapOpenApi().AllowAnonymous() and UseSwaggerUI(...) stays here, as in Module 10 ...
+
     app.UseHttpsRedirection();
-    app.UseCors();                        // Module 3, stays before authentication
-    app.UseAuthentication();              // BEFORE UseAuthorization
-    app.Use(async (context, next) =>
+    app.UseCors();                                              // Module 3: before authentication
+    app.UseAuthentication();                                    // builds HttpContext.User from the token. BEFORE UseAuthorization
+    app.Use(async (context, next) =>                            // every log line of this request carries the user id
     {
         var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
         using (Serilog.Context.LogContext.PushProperty("UserId", userId))
             await next(context);
     });
-    app.UseAuthorization();
+    app.UseAuthorization();                                     // roles, policies, fallback policy
     app.MapControllers();
 
     if (app.Environment.IsDevelopment())
